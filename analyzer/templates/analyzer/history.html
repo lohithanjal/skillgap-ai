@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Analysis History</title>
+
+    <style>
+
+        body {
+
+            margin: 0;
+
+            font-family: Arial, sans-serif;
+
+            background: #f3f4f6;
+
+        }
+
+        .navbar {
+
+            background: #111827;
+
+            color: white;
+
+            padding: 18px 7%;
+
+            display: flex;
+
+            justify-content: space-between;
+
+        }
+
+        .navbar a {
+
+            color: white;
+
+            text-decoration: none;
+
+        }
+
+        .container {
+
+            width: 1000px;
+
+            max-width: 94%;
+
+            margin: 40px auto;
+
+        }
+
+        .card {
+
+            background: white;
+
+            padding: 22px;
+
+            margin-bottom: 15px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0,0,0,.05);
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+        }
+
+        .score {
+
+            font-size: 25px;
+
+            font-weight: bold;
+
+            color: #4f46e5;
+
+        }
+
+        .date {
+
+            color: #6b7280;
+
+            font-size: 13px;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+<nav class="navbar">
+
+    <strong>
+        🤖 SkillGap AI
+    </strong>
+
+    <a href="/">
+        New Analysis
+    </a>
+
+</nav>
+
+
+<div class="container">
+
+    <h1>
+        📋 Analysis History
+    </h1>
+
+
+    {% for analysis in analyses %}
+
+        <div class="card">
+
+            <div>
+
+                <h2>
+                    {{ analysis.target_role }}
+                </h2>
+
+                <div class="date">
+
+                    {{ analysis.created_at }}
+
+                </div>
+
+            </div>
+
+            <div class="score">
+
+                {{ analysis.match_percentage }}%
+
+            </div>
+
+        </div>
+
+    {% empty %}
+
+        <p>
+            No analyses yet.
+        </p>
+
+    {% endfor %}
+
+</div>
+
+
+</body>
+
+</html>

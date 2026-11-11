@@ -1,0 +1,1161 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>SkillGap AI - Career Analysis</title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'analyzer/style.css' %}"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- ================= NAVBAR ================= -->
+
+<nav class="navbar">
+
+    <div class="nav-container">
+
+        <div class="logo">
+
+            🤖 SkillGap AI
+
+        </div>
+
+
+        <div class="nav-links">
+
+            <a href="/">
+                Analyze
+            </a>
+
+            <a href="/history/">
+                History
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="dashboard-container">
+
+
+    <!-- ================= HEADER ================= -->
+
+    <section class="result-header">
+
+        <div>
+
+            <span class="result-label">
+                ✨ AI CAREER ANALYSIS
+            </span>
+
+            <h1>
+                Your Career Intelligence Report
+            </h1>
+
+            <p>
+
+                {% if analysis.target_role %}
+
+                    Here's how your skills compare with
+                    requirements for
+                    <strong>
+                        {{ analysis.target_role }}
+                    </strong>.
+
+                {% else %}
+
+                    Here's what we found from your
+                    resume and skills.
+
+                {% endif %}
+
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================= SCORE CARDS ================= -->
+
+    <section class="score-grid">
+
+
+        <!-- Overall Score -->
+
+        <div class="score-card">
+
+            <div class="score-icon">
+                🎯
+            </div>
+
+            <div>
+
+                <span class="score-title">
+                    Overall Match
+                </span>
+
+                <div class="score-number">
+
+                    {{ analysis.match_percentage|floatformat:0 }}%
+
+                </div>
+
+                <span class="score-description">
+                    Skill compatibility
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Matched -->
+
+        <div class="score-card">
+
+            <div class="score-icon green">
+                ✓
+            </div>
+
+            <div>
+
+                <span class="score-title">
+                    Matched Skills
+                </span>
+
+                <div class="score-number">
+
+                    {{ result.matched_skills|length }}
+
+                </div>
+
+                <span class="score-description">
+                    Skills you already have
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Missing -->
+
+        <div class="score-card">
+
+            <div class="score-icon red">
+                +
+            </div>
+
+            <div>
+
+                <span class="score-title">
+                    Missing Skills
+                </span>
+
+                <div class="score-number">
+
+                    {{ result.missing_skills|length }}
+
+                </div>
+
+                <span class="score-description">
+                    Skills to improve
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Resume Skills -->
+
+        <div class="score-card">
+
+            <div class="score-icon purple">
+                📄
+            </div>
+
+            <div>
+
+                <span class="score-title">
+                    Resume Skills
+                </span>
+
+                <div class="score-number">
+
+                    {% if analysis.detected_resume_skills %}
+
+                        {{ analysis.detected_resume_skills|length }}
+
+                    {% else %}
+
+                        0
+
+                    {% endif %}
+
+                </div>
+
+                <span class="score-description">
+                    Detected from resume
+                </span>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================= RECOMMENDED JOB ROLES ================= -->
+
+    <section class="dashboard-section">
+
+
+        <div class="section-heading">
+
+            <div class="section-icon purple">
+                💼
+            </div>
+
+            <div>
+
+                <h2>
+                    Job Roles You Are Eligible For
+                </h2>
+
+                <p>
+                    Based on the skills detected from your resume.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="job-role-grid">
+
+
+            {% for job in job_recommendations %}
+
+
+                <div class="job-role-card">
+
+
+                    <div class="job-role-top">
+
+                        <h3>
+                            {{ job.role }}
+                        </h3>
+
+                        <span class="job-score">
+                            {{ job.score }}%
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- STATUS -->
+
+                    <div class="job-status">
+
+
+                        {% if job.score >= 80 %}
+
+                            <span class="status strong">
+                                🟢 Strong Match
+                            </span>
+
+                        {% elif job.score >= 60 %}
+
+                            <span class="status good">
+                                🟡 Good Match
+                            </span>
+
+                        {% elif job.score >= 40 %}
+
+                            <span class="status partial">
+                                🟠 Partial Match
+                            </span>
+
+                        {% else %}
+
+                            <span class="status weak">
+                                🔴 Needs Improvement
+                            </span>
+
+                        {% endif %}
+
+
+                    </div>
+
+
+
+                    <!-- MATCHED SKILLS -->
+
+                    <div class="job-skills">
+
+                        <strong>
+                            Skills You Have
+                        </strong>
+
+
+                        <div class="skill-list">
+
+
+                            {% for skill in job.matched_skills %}
+
+                                <span class="skill skill-matched">
+
+                                    ✓ {{ skill }}
+
+                                </span>
+
+
+                            {% empty %}
+
+                                <span class="empty-message">
+
+                                    No matching skills
+
+                                </span>
+
+                            {% endfor %}
+
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- MISSING SKILLS -->
+
+                    <div class="job-skills">
+
+                        <strong>
+                            Skills To Improve
+                        </strong>
+
+
+                        <div class="skill-list">
+
+
+                            {% for skill in job.missing_skills %}
+
+                                <span class="skill skill-missing">
+
+                                    + {{ skill }}
+
+                                </span>
+
+
+                            {% empty %}
+
+                                <span class="success-message">
+
+                                    🎉 No missing skills
+
+                                </span>
+
+                            {% endfor %}
+
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- APPLY RECOMMENDATION -->
+
+                    <div class="apply-recommendation">
+
+
+                        {% if job.score >= 80 %}
+
+                            🚀 You can confidently apply
+                            for this role.
+
+
+                        {% elif job.score >= 60 %}
+
+                            👍 You can apply, but improve
+                            the missing skills.
+
+
+                        {% elif job.score >= 40 %}
+
+                            📚 Build the missing skills
+                            before applying.
+
+
+                        {% else %}
+
+                            💪 More preparation is
+                            recommended.
+
+                        {% endif %}
+
+
+                    </div>
+
+
+                </div>
+
+
+            {% empty %}
+
+
+                <div class="empty-card">
+
+                    <div class="empty-icon">
+                        📄
+                    </div>
+
+                    <h3>
+                        No Job Recommendations Yet
+                    </h3>
+
+                    <p>
+                        Upload a PDF resume to detect your
+                        skills and find suitable job roles.
+                    </p>
+
+                </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================= RESUME SKILLS ================= -->
+
+    {% if analysis.detected_resume_skills %}
+
+    <section class="dashboard-section">
+
+
+        <div class="section-heading">
+
+            <div class="section-icon blue">
+                📄
+            </div>
+
+            <div>
+
+                <h2>
+                    Skills Detected From Your Resume
+                </h2>
+
+                <p>
+                    Skills automatically identified from your uploaded resume.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="skill-list">
+
+
+            {% for skill in result.user_skills %}
+
+                <span class="skill skill-matched">
+
+                    ✓ {{ skill }}
+
+                </span>
+
+            {% empty %}
+
+                <div class="empty-card">
+                    No skills detected.
+                </div>
+
+            {% endfor %}
+
+
+        </div>
+
+
+    </section>
+
+    {% endif %}
+
+
+
+    <!-- ================= MATCHED SKILLS ================= -->
+
+    <section class="dashboard-section">
+
+
+        <div class="section-heading">
+
+            <div class="section-icon green">
+                ✓
+            </div>
+
+            <div>
+
+                <h2>
+                    Matched Skills
+                </h2>
+
+                <p>
+                    Skills you already have that match the job requirements.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="skill-list">
+
+
+            {% for skill in result.matched_skills %}
+
+                <span class="skill skill-matched">
+
+                    ✓ {{ skill }}
+
+                </span>
+
+
+            {% empty %}
+
+                <div class="empty-card">
+
+                    No matching skills found.
+
+                </div>
+
+            {% endfor %}
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================= MISSING SKILLS ================= -->
+
+    <section class="dashboard-section">
+
+
+        <div class="section-heading">
+
+            <div class="section-icon red">
+                +
+            </div>
+
+            <div>
+
+                <h2>
+                    Missing Skills
+                </h2>
+
+                <p>
+                    Skills you should learn to improve your job readiness.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="skill-list">
+
+
+            {% for skill in result.missing_skills %}
+
+                <span class="skill skill-missing">
+
+                    + {{ skill }}
+
+                </span>
+
+
+            {% empty %}
+
+                <div class="success-card">
+
+                    🎉 You have all the required skills!
+
+                </div>
+
+            {% endfor %}
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================= CATEGORY ANALYSIS ================= -->
+
+    <section class="dashboard-section">
+
+
+        <div class="section-heading">
+
+            <div class="section-icon purple">
+                📊
+            </div>
+
+            <div>
+
+                <h2>
+                    Category Analysis
+                </h2>
+
+                <p>
+                    Your skill performance across different technical areas.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="category-grid">
+
+
+            {% for category, score in result.category_scores.items %}
+
+
+                <div class="category-card">
+
+
+                    <div class="category-top">
+
+                        <strong>
+                            {{ category }}
+                        </strong>
+
+                        <span>
+                            {{ score }}%
+                        </span>
+
+                    </div>
+
+
+                    <div class="progress-bar">
+
+                        <div
+                            class="progress-fill"
+                            style="width: {{ score }}%;"
+                        ></div>
+
+                    </div>
+
+
+                </div>
+
+
+            {% empty %}
+
+
+                <div class="empty-card">
+
+                    Category analysis is not available.
+
+                </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================= PRIORITIES ================= -->
+
+    <section class="dashboard-section">
+
+
+        <div class="section-heading">
+
+            <div class="section-icon orange">
+                🔥
+            </div>
+
+            <div>
+
+                <h2>
+                    Skill Gap Priorities
+                </h2>
+
+                <p>
+                    Skills ranked according to their importance.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="priority-grid">
+
+
+            {% for item in result.skill_priorities %}
+
+
+                <div class="priority-card">
+
+
+                    <div class="priority-number">
+
+                        {{ forloop.counter }}
+
+                    </div>
+
+
+                    <div class="priority-content">
+
+                        <h3>
+
+                            {{ item.skill }}
+
+                        </h3>
+
+
+                        <p>
+
+                            Priority:
+                            <strong>
+                                {{ item.priority }}
+                            </strong>
+
+                        </p>
+
+
+                        {% if item.estimated_days %}
+
+                            <span>
+
+                                ⏱ {{ item.estimated_days }}
+                                days estimated
+
+                            </span>
+
+                        {% endif %}
+
+
+                    </div>
+
+
+                </div>
+
+
+            {% empty %}
+
+
+                <div class="empty-card">
+
+                    No skill priorities available.
+
+                </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================= LEARNING ROADMAP ================= -->
+
+    <section class="dashboard-section">
+
+
+        <div class="section-heading">
+
+            <div class="section-icon blue">
+                📚
+            </div>
+
+            <div>
+
+                <h2>
+                    Personalized Learning Roadmap
+                </h2>
+
+                <p>
+                    A step-by-step plan to close your skill gaps.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="roadmap">
+
+
+            {% for step in result.learning_roadmap %}
+
+
+                <div class="roadmap-item">
+
+
+                    <div class="roadmap-number">
+
+                        {{ forloop.counter }}
+
+                    </div>
+
+
+                    <div class="roadmap-content">
+
+
+                        {% if step.skill %}
+
+                            <h3>
+                                {{ step.skill }}
+                            </h3>
+
+                        {% endif %}
+
+
+                        {% if step.title %}
+
+                            <h3>
+                                {{ step.title }}
+                            </h3>
+
+                        {% endif %}
+
+
+                        {% if step.description %}
+
+                            <p>
+                                {{ step.description }}
+                            </p>
+
+                        {% endif %}
+
+
+                        {% if step.estimated_days %}
+
+                            <span class="roadmap-duration">
+
+                                ⏱
+                                {{ step.estimated_days }}
+                                days
+
+                            </span>
+
+                        {% endif %}
+
+
+                    </div>
+
+
+                </div>
+
+
+            {% empty %}
+
+
+                <div class="empty-card">
+
+                    🎉 No learning roadmap required.
+
+                </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================= RECOMMENDED PROJECTS ================= -->
+
+    <section class="dashboard-section">
+
+
+        <div class="section-heading">
+
+            <div class="section-icon purple">
+                💻
+            </div>
+
+            <div>
+
+                <h2>
+                    Recommended Projects
+                </h2>
+
+                <p>
+                    Projects that can help you practice your missing skills.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="project-grid">
+
+
+            {% for project in result.recommended_projects %}
+
+
+                <div class="project-card">
+
+
+                    {% if project.title %}
+
+                        <h3>
+                            {{ project.title }}
+                        </h3>
+
+                    {% else %}
+
+                        <h3>
+                            {{ project }}
+                        </h3>
+
+                    {% endif %}
+
+
+                    {% if project.description %}
+
+                        <p>
+                            {{ project.description }}
+                        </p>
+
+                    {% endif %}
+
+
+                    {% if project.skills %}
+
+                        <div class="skill-list">
+
+                            {% for skill in project.skills %}
+
+                                <span class="skill">
+
+                                    {{ skill }}
+
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+
+                </div>
+
+
+            {% empty %}
+
+
+                <div class="empty-card">
+
+                    No project recommendations available.
+
+                </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================= INTERVIEW PREPARATION ================= -->
+
+    <section class="dashboard-section">
+
+
+        <div class="section-heading">
+
+            <div class="section-icon orange">
+                🎤
+            </div>
+
+            <div>
+
+                <h2>
+                    Interview Preparation
+                </h2>
+
+                <p>
+                    Important topics to prepare for your target role.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="interview-grid">
+
+
+            {% for topic in result.interview_topics %}
+
+
+                <div class="interview-card">
+
+                    <span class="interview-number">
+
+                        {{ forloop.counter }}
+
+                    </span>
+
+
+                    <span>
+
+                        {{ topic }}
+
+                    </span>
+
+                </div>
+
+
+            {% empty %}
+
+
+                <div class="empty-card">
+
+                    No interview topics available.
+
+                </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================= ACTION BUTTONS ================= -->
+
+    <section class="action-section">
+
+
+        <a
+            href="/"
+            class="primary-btn"
+        >
+
+            🔄 Analyze Another Resume
+
+        </a>
+
+
+        <a
+            href="/history/"
+            class="secondary-btn"
+        >
+
+            📜 View Analysis History
+
+        </a>
+
+
+    </section>
+
+
+</main>
+
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer class="footer">
+
+    <p>
+
+        🤖 SkillGap AI
+
+        <span>
+            •
+        </span>
+
+        AI-Powered Career Intelligence
+
+    </p>
+
+</footer>
+
+
+</body>
+
+</html>
